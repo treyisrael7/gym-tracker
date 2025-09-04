@@ -43,6 +43,7 @@ export function GoalTracker({ goals, onAddGoal }: GoalTrackerProps) {
     <div className="min-h-screen bg-background">
       <div className="bg-card border-b p-4">
         <h1 className="text-xl font-semibold">Goals</h1>
+        <p className="text-sm text-muted-foreground mt-1">Track your fitness milestones</p>
       </div>
 
       <div className="p-4 space-y-4 pb-20">
@@ -55,7 +56,7 @@ export function GoalTracker({ goals, onAddGoal }: GoalTrackerProps) {
 
         {/* Add Goal Form */}
         {showAddForm && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">New Goal</CardTitle>
             </CardHeader>
@@ -128,7 +129,7 @@ export function GoalTracker({ goals, onAddGoal }: GoalTrackerProps) {
             const isCompleted = progress >= 100
 
             return (
-              <Card key={goal.id} className={isCompleted ? "border-primary bg-primary/5" : ""}>
+              <Card key={goal.id} className={`shadow-sm ${isCompleted ? "border-primary bg-primary/5" : ""}`}>
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="flex justify-between items-start">

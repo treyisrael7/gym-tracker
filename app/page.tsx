@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus, Target } from "lucide-react"
+import { Plus, Target, Clock } from "lucide-react"
 import { WorkoutLogger } from "@/components/workout-logger"
 import { GoalTracker } from "@/components/goal-tracker"
+import { WorkoutTimer } from "@/components/workout-timer"
 
 export default function GymTracker() {
-  const [activeTab, setActiveTab] = useState<"log" | "goals">("log")
+  const [activeTab, setActiveTab] = useState<"log" | "goals" | "timer">("log")
 
   const [lastWorkouts, setLastWorkouts] = useState({})
   const [goals, setGoals] = useState([])
@@ -44,7 +45,7 @@ export default function GymTracker() {
 
   const BottomNavigation = () => (
     <div className="fixed bottom-0 left-0 right-0 bg-card border-t p-4">
-      <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+      <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
         <Button
           variant={activeTab === "log" ? "default" : "ghost"}
           size="sm"
@@ -62,6 +63,15 @@ export default function GymTracker() {
         >
           <Target className="h-5 w-5" />
           <span className="text-xs">Goals</span>
+        </Button>
+        <Button
+          variant={activeTab === "timer" ? "default" : "ghost"}
+          size="sm"
+          className="flex flex-col gap-1 h-auto py-2"
+          onClick={() => setActiveTab("timer")}
+        >
+          <Clock className="h-5 w-5" />
+          <span className="text-xs">Timer</span>
         </Button>
       </div>
     </div>
@@ -81,6 +91,16 @@ export default function GymTracker() {
     return (
       <div className="min-h-screen bg-background">
         <GoalTracker goals={goals} onAddGoal={addGoal} />
+        <BottomNavigation />
+        <div className="h-20" />
+      </div>
+    )
+  }
+
+  if (activeTab === "timer") {
+    return (
+      <div className="min-h-screen bg-background">
+        <WorkoutTimer />
         <BottomNavigation />
         <div className="h-20" />
       </div>

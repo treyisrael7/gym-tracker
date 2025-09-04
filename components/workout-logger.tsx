@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Set {
-  reps: number
-  weight: number
+  reps: number | string
+  weight: number | string
 }
 
 interface Exercise {
@@ -148,7 +148,7 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
     setExercises(updated)
   }
 
-  const updateSet = (exerciseIndex: number, setIndex: number, field: keyof Set, value: number) => {
+  const updateSet = (exerciseIndex: number, setIndex: number, field: keyof Set, value: number | string) => {
     const updated = exercises.map((exercise, i) =>
       i === exerciseIndex
         ? {
@@ -218,10 +218,11 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
     <div className="min-h-screen bg-background">
       <div className="bg-card border-b p-4">
         <h1 className="text-xl font-semibold">Log Workout</h1>
+        <p className="text-sm text-muted-foreground mt-1">Track your exercises and progress</p>
       </div>
 
       <div className="p-4 space-y-6 pb-20">
-        <Card className="border-2">
+        <Card className="border-2 shadow-sm">
           <CardContent className="p-4">
             <Label className="text-base font-medium mb-3 block">Select Muscle Group</Label>
             <Select value={muscleGroup} onValueChange={setMuscleGroup}>
@@ -262,7 +263,7 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
             </div>
 
             {exercises.map((exercise, index) => (
-              <Card key={index}>
+              <Card key={index} className="shadow-sm">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="font-medium">Exercise {index + 1}</span>
@@ -279,7 +280,7 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
                   </div>
 
                   {exercise.name && lastWorkouts[exercise.name] && (
-                    <div className="text-sm text-muted-foreground bg-muted p-3 rounded border-l-4 border-primary">
+                    <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg border-l-4 border-primary">
                       <strong>Last time:</strong> {lastWorkouts[exercise.name].sets} sets ×{" "}
                       {lastWorkouts[exercise.name].reps} reps @ {lastWorkouts[exercise.name].weight}lbs
                     </div>
@@ -349,7 +350,7 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
                     </div>
 
                     {exercise.sets.map((set, setIndex) => (
-                      <div key={setIndex} className="flex items-center gap-2 p-2 bg-muted rounded">
+                      <div key={setIndex} className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg border">
                         <span className="text-sm font-medium w-12">Set {setIndex + 1}</span>
                         <div className="flex-1 grid grid-cols-2 gap-2">
                           <div className="space-y-1">
@@ -358,7 +359,15 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
                               type="number"
                               min="1"
                               value={set.reps}
-                              onChange={(e) => updateSet(index, setIndex, "reps", Number.parseInt(e.target.value) || 1)}
+                              onChange={(e) => {
+                                const value = e.target.value === "" ? "" : Number.parseInt(e.target.value) || 1
+                                updateSet(index, setIndex, "reps", value)
+                              }}
+                              onBlur={(e) => {
+                                if (e.target.value === "" || Number.parseInt(e.target.value) < 1) {
+                                  updateSet(index, setIndex, "reps", 1)
+                                }
+                              }}
                               className="h-8"
                             />
                           </div>
@@ -368,10 +377,11 @@ export function WorkoutLogger({ lastWorkouts }: WorkoutLoggerProps) {
                               type="number"
                               min="0"
                               step="5"
-                              value={set.weight}
-                              onChange={(e) =>
-                                updateSet(index, setIndex, "weight", Number.parseInt(e.target.value) || 0)
-                              }
+                              value={set.weight === 0 ? "" : set.weight}
+                              onChange={(e) => {
+                                const value = e.target.value === "" ? 0 : Number.parseInt(e.target.value) || 0
+                                updateSet(index, setIndex, "weight", value)
+                              }}
                               className="h-8"
                             />
                           </div>
